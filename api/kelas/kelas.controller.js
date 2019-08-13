@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const Q = require('q');
-const Course = require('./course.model');
+const Kelas = require('./kelas.model');
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -9,11 +9,11 @@ exports.index = function (req, res) {
   let query = {};
 
   Q.all([
-    Course.count(query).exec(),
-    Course.find(query).skip(skip).limit(limit).exec()
+    Kelas.count(query).exec(),
+    Kelas.find(query).skip(skip).limit(limit).exec()
   ])
-    .spread(function (total, courses) {
-      return res.status(200).json({ total, courses });
+    .spread(function (total, kelass) {
+      return res.status(200).json({ total, kelass });
     })
     .catch(function (err) {
       if (err) return res.status(500).send(err);
@@ -24,51 +24,51 @@ exports.search = function (req, res) {
   let limit = Number(req.query.limit) || 25;
   let query = { name: { $regex: req.query.name, $options: 'i' } };
 
-  Course.find(query).limit(limit).exec(function (err, courses) {
+  Kelas.find(query).limit(limit).exec(function (err, kelass) {
     if (err) return res.status(500).send(err);
 
-    return res.status(200).json(courses);
+    return res.status(200).json(kelass);
   });
 };
 
 exports.show = function (req, res) {
-  Course.findOne({ _id: req.params.id }).populate('classes').exec(function (err, course) {
+  Kelas.findOne({ _id: req.params.id }).populate('classes').exec(function (err, kelas) {
     if (err) return res.status(500).send(err);
 
-    if (!course) return res.status(404).json({ message: 'Course Not Found!' });
-    return res.status(200).json(course);
+    if (!kelas) return res.status(404).json({ message: 'Kelas Not Found!' });
+    return res.status(200).json(kelas);
   });
 };
 
 exports.create = function (req, res) {
   let body = req.body;
-  Course.create(body, function (err, course) {
+  Kelas.create(body, function (err, kelas) {
     if (err) return res.status(500).send(err);
 
-    return res.status(201).json(course);
+    return res.status(201).json(kelas);
   });
 };
 
 exports.update = function (req, res) {
-  Course.findOne({ _id: req.params.id }).exec(function (err, course) {
+  Kelas.findOne({ _id: req.params.id }).exec(function (err, kelas) {
     if (err) return res.status(500).send(500);
-    if (!course) return res.status(404).json({ message: 'Course not Found!' });
+    if (!kelas) return res.status(404).json({ message: 'Kelas not Found!' });
 
-    let updated = _.merge(course, req.body);
+    let updated = _.merge(kelas, req.body);
     updated.save(function (err) {
       if (err) return res.status(500).send(500);
 
-      return res.status(200).json(course);
+      return res.status(200).json(kelas);
     });
   });
 };
 
 exports.destroy = function (req, res) {
-  Course.findOne({ _id: req.params.id }).exec(function (err, course) {
+  Kelas.findOne({ _id: req.params.id }).exec(function (err, kelas) {
     if (err) return res.status(500).send(err);
-    if (!course) return res.status(404).json({ message: 'Course Not Found!' });
+    if (!kelas) return res.status(404).json({ message: 'Kelas Not Found!' });
 
-    course.remove(function (err) {
+    kelas.remove(function (err) {
       if (err) return res.status(500).send(500);
 
       return res.status(204);
