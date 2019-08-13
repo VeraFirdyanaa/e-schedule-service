@@ -2,6 +2,8 @@ const _ = require('lodash');
 const Q = require('q');
 const User = require('./user.model');
 const Student = require('../student/student.model');
+const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -90,7 +92,7 @@ exports.authenticate = function (req, res) {
             email: user.email,
             role: user.role
           }
-          let token = jwt.sign(payload, process.env.SECRET_KEY, {
+          let token = jwt.sign(payload, config.SECRET_KEY, {
             expiresIn: 1440
           });
           switch (user.role) {
