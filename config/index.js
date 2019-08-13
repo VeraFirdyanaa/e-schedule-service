@@ -1,3 +1,3 @@
 module.exports = {
-  DB_URL: "mongodb://localhost/27017"
+  DB_URL: process.env.DB_URL || "mongodb://vera:vera2019@ds163014.mlab.com:63014/bansal_schedule"
 }
