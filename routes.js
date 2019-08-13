@@ -3,6 +3,7 @@ module.exports = function (app) {
   app.use('/api/kelas', require('./api/kelas'));
   app.use('/api/course', require('./api/course'));
   app.use('/api/majors', require('./api/major'));
+  app.use('/api/users', require('./api/user'));
 
   app.route('*')
     .get(function (req, res) {
