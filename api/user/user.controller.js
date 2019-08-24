@@ -96,13 +96,13 @@ exports.authenticate = function (req, res) {
             expiresIn: 1440
           });
           switch (user.role) {
-            case 'dosen':
+            case 'Lecture':
               return res.send({
                 token: token,
                 user: payload
               });
               break;
-            case 'mahasiswa':
+            case 'Student':
               Student.findOne({ user: user._id }).exec(function (err, student) {
                 if (err) return res.status(500).send(err);
 
