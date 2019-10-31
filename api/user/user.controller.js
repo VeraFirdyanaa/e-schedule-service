@@ -4,6 +4,7 @@ const User = require('./user.model');
 const Student = require('../student/student.model');
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
+const bcrypt = require('bcryptjs');
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -43,12 +44,36 @@ exports.show = function (req, res) {
   });
 };
 
-exports.create = function (req, res) {
-  let body = req.body;
-  User.create(body, function (err, user) {
+exports.me = function (req, res) {
+  if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+
+  User.findOne({ _id: req.user._id }).populate('classes').exec(function (err, user) {
     if (err) return res.status(500).send(err);
 
-    return res.status(201).json(user);
+    if (!user) return res.status(404).json({ message: 'User Not Found!' });
+    return res.status(200).json(user);
+  });
+}
+
+exports.create = function (req, res) {
+  let body = req.body;
+  bcrypt.genSalt(10, function (err, salt) {
+    if (err) return res.status(500).send(err);
+
+    console.log('salt', salt);
+    bcrypt.hash(body.password, salt, function (err, hash) {
+      console.log('hash', hash, err);
+      if (err) return res.status(500).send(err);
+
+      body.password = hash;
+      console.log('body', body);
+
+      User.create(body, function (err, user) {
+        if (err) return res.status(500).send(err);
+
+        return res.status(201).json(user);
+      });
+    });
   });
 };
 
@@ -85,8 +110,8 @@ exports.authenticate = function (req, res) {
   })
     .then(user => {
       if (user) {
-        // if (bcrypt.compareSync(req.body.password, user.password)) {
-        if (req.body.password === user.password) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
+          // if (req.body.password === user.password) {
           const payload = {
             _id: user._id,
             email: user.email,
@@ -103,15 +128,33 @@ exports.authenticate = function (req, res) {
               });
               break;
             case 'Student':
-              Student.findOne({ user: user._id }).exec(function (err, student) {
+              Student.findOne({ npm: user.nomor_induk }).exec(function (err, student) {
                 if (err) return res.status(500).send(err);
 
-                if (!student) return res.status(400).json({ message: "Student Data Not Found!" });
-                payload.student = student;
-                return res.send({
-                  token: token,
-                  user: payload
-                });
+                if (!student) return res.status(404).json({ message: 'Student Not Found!' });
+
+                if (user.hasLogin) {
+                  payload.student = student;
+                  return res.send({
+                    token: token,
+                    user: payload
+                  });
+                } else if (!user.hasLogin && student.npm === user.nomor_induk) {
+                  student.user_id = user._id;
+                  payload.student = student;
+                  student.save(function (err) {
+                    if (err) return res.status(500).send(err);
+
+                    return res.send({
+                      token: token,
+                      user: payload
+                    });
+                  });
+                } else {
+                  return res.status(422).json({
+
+                  });
+                }
               });
               break;
             default:

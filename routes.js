@@ -4,6 +4,8 @@ module.exports = function (app) {
   app.use('/api/course', require('./api/course'));
   app.use('/api/majors', require('./api/major'));
   app.use('/api/users', require('./api/user'));
+  app.use('/api/employees', require('./api/employee'));
+  app.use('/api/departments', require('./api/department'));
 
   app.route('*')
     .get(function (req, res) {
