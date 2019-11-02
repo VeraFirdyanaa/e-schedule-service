@@ -10,7 +10,7 @@ exports.index = function (req, res) {
 
   Q.all([
     Kelas.count(query).exec(),
-    Kelas.find(query).skip(skip).limit(limit).exec()
+    Kelas.find(query).populate('major', 'name').skip(skip).limit(limit).exec()
   ])
     .spread(function (total, kelass) {
       return res.status(200).json({ total, kelass });

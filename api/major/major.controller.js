@@ -20,6 +20,14 @@ exports.index = function (req, res) {
     });
 };
 
+exports.all = function (req, res) {
+  Major.find().select('_id name level').exec(function (err, majors) {
+    if (err) return res.status(500).send(err);
+
+    res.status(200).json(majors);
+  });
+}
+
 exports.search = function (req, res) {
   let limit = Number(req.query.limit) || 25;
   let query = { name: { $regex: req.query.name, $options: 'i' } };
@@ -71,7 +79,7 @@ exports.destroy = function (req, res) {
     major.remove(function (err) {
       if (err) return res.status(500).send(500);
 
-      return res.status(204);
+      return res.status(200).json({ message: 'Major Deleted!' });
     });
   });
 };

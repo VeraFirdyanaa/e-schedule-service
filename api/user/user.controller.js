@@ -2,6 +2,7 @@ const _ = require('lodash');
 const Q = require('q');
 const User = require('./user.model');
 const Student = require('../student/student.model');
+const Lecture = require('../lecture/lecture.model');
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const bcrypt = require('bcryptjs');
@@ -122,9 +123,15 @@ exports.authenticate = function (req, res) {
           });
           switch (user.role) {
             case 'Lecture':
-              return res.send({
-                token: token,
-                user: payload
+              Lecture.findOne({ user: user._id }).exec(function (err, lecture) {
+                if (err) return res.status(500).send(err);
+                if (!lecture) return res.status(404).json({ message: 'Lecture Not Found!' });
+
+                payload.lecture = lecture;
+                return res.send({
+                  token: token,
+                  user: payload
+                });
               });
               break;
             case 'Student':

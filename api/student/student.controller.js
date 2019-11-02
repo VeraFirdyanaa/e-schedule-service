@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const Student = require('./student.model');
+const User = require('../user/user.model');
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -68,11 +69,14 @@ exports.destroy = function (req, res) {
   Student.findOne({ _id: req.params.id }).exec(function (err, student) {
     if (err) return res.status(500).send(err);
     if (!student) return res.status(404).json({ message: 'Student Not Found!' });
+    User.deleteOne({ _id: student.user }, function (err, userDeleted) {
+      if (err) return res.status(500).send(err);
+      console.log('user deleted', userDeleted);
+      student.remove(function (err) {
+        if (err) return res.status(500).send(500);
 
-    student.remove(function (err) {
-      if (err) return res.status(500).send(500);
-
-      return res.status(204);
+        return res.status(200).json({ message: 'Student Deleted!' });
+      });
     });
   });
 };

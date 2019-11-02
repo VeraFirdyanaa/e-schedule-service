@@ -71,7 +71,7 @@ exports.destroy = function (req, res) {
     course.remove(function (err) {
       if (err) return res.status(500).send(500);
 
-      return res.status(204);
+      return res.status(200).json({ message: "Course Deleted!" });
     });
   });
 };
