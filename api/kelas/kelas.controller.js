@@ -32,7 +32,7 @@ exports.search = function (req, res) {
 };
 
 exports.show = function (req, res) {
-  Kelas.findOne({ _id: req.params.id }).populate('classes').exec(function (err, kelas) {
+  Kelas.findOne({ _id: req.params.id }).exec(function (err, kelas) {
     if (err) return res.status(500).send(err);
 
     if (!kelas) return res.status(404).json({ message: 'Kelas Not Found!' });

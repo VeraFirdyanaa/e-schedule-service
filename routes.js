@@ -8,6 +8,10 @@ module.exports = function (app) {
   app.use('/api/departments', require('./api/department'));
   app.use('/api/lectures', require('./api/lecture'));
   app.use('/api/courses', require('./api/course'));
+  app.use('/api/teachingPlans', require('./api/teachingPlan'));
+  app.use('/api/studyYears', require('./api/studyYear'));
+  app.use('/api/schedules', require('./api/schedule'));
+  app.use('/api/rooms', require('./api/room'));
 
   app.route('*')
     .get(function (req, res) {

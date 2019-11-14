@@ -19,7 +19,7 @@ const LectureSchema = new Schema({
     }
   ],
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  courses: [{ type: Schema.Types.ObjectId, ref: 'Course' }]
+  // courses: [{ type: Schema.Types.ObjectId, ref: 'Course' }]
 });
 
 module.exports = mongoose.model('Lecture', LectureSchema);
