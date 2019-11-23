@@ -12,6 +12,7 @@ module.exports = function (app) {
   app.use('/api/studyYears', require('./api/studyYear'));
   app.use('/api/schedules', require('./api/schedule'));
   app.use('/api/rooms', require('./api/room'));
+  app.use('/api/broadcasts', require('./api/tpBroadcast'));
 
   app.route('*')
     .get(function (req, res) {

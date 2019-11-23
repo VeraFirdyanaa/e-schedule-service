@@ -7,6 +7,7 @@ const Kelas = require('../kelas/kelas.model');
 const Course = require('../course/course.model');
 const Room = require('../room/room.model');
 const Schedule = require('../schedule/schedule.model');
+const BroadCast = require('../tpBroadcast/tpBroadcast.controller');
 
 let classType = [{ key: "/P", value: "reguler" }, { key: "/M", value: "malam" }, { key: "/K", value: "ekstension" }];
 let listDay = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
@@ -124,13 +125,13 @@ exports.automation = function (req, res) {
     if (!studyYear) return res.status(404).json({ message: 'Tahun Ajaran Tidak Ditemukan!' });
 
     switch (scheduler) {
-      case 'notified':
-        automationNotifHandler(studyYear, body, function (err, result) {
-          if (err) return res.status(500).send(err);
+      // case 'notified':
+      //   automationNotifHandler(studyYear, body, function (err, result) {
+      //     if (err) return res.status(500).send(err);
 
-          res.status(200).json({ message: 'Automation status: Teaching Plan Berhasil Dimulai', result: result });
-        });
-        break;
+      //     res.status(200).json({ message: 'Automation status: Teaching Plan Berhasil Dimulai', result: result });
+      //   });
+      //   break;
       case 'start':
         automationShedulerHandler(studyYear, body, function (err, result) {
           let schedule = {
@@ -162,10 +163,29 @@ exports.automation = function (req, res) {
 }
 
 function automationNotifHandler(studyYear, body, callback) {
-  StudyYear.update({ _id: studyYear._id }, { $set: { stage: 'notified', endTeachingPlan: body.endTeachingPlan } }, function (err, result) {
-    callback(err, result);
+  BroadCast.count({ studyYear: req.body.studyYear }).exec(function (err, count) {
+    if (err) {
+      callback(err, null);
+    } else {
+      if (count > 0) {
+        StudyYear.update({ _id: studyYear._id }, { $set: { stage: 'notified', endTeachingPlan: body.endTeachingPlan } }, function (err, result) {
+          callback(err, result);
+        });
+      } else {
+        BroadCast.create(body, function (err, broadcast) {
+          if (err) {
+            callback(err, null);
+          } else {
+            StudyYear.update({ _id: studyYear._id }, { $set: { stage: 'notified', endTeachingPlan: body.endTeachingPlan } }, function (err, result) {
+              callback(null, result);
+            });
+          }
+        });
+      }
+    }
   });
 }
+
 
 function automationShedulerHandler(studyYear, body, callback) {
   let listKelas = [];
@@ -208,12 +228,6 @@ function filterTeachingPlans(kelas, schedules, teachingPlans, courses) {
 
           possibleTeachingFilterJenisKelas.map(function (ptf) {
             let isConflict = schedules.findIndex(function (sch) {
-              // console.log('======================================');
-              // console.log('[SCH]', sch);
-              // console.log('[PTF]', ptf);
-              // console.log('[TP]', tp);
-              // console.log('[Compare Times]', checkIfTimeConflict({ start: sch.startTime, end: sch.endTime }, ptf.time), checkIfTimeConflict({ start: sch.startTime, end: sch.endTime }, ptf.time) <= 185 ? 'conflict cuy kurang dari 3 jam' : 'santuyy');
-              // console.log('======================================');
               let maxTime = pt.course_id.sks * sksToMinute;
               return sch.day === ptf.day && (checkIfTimeConflict({ start: sch.startTime, end: sch.endTime }, ptf.time) <= maxTime) && sch.lecture === tp.lecture
             });
