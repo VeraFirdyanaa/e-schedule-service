@@ -6,4 +6,4 @@ router.get('/', controller.index);
 router.get('/expired', controller.checkExpired);
 router.post('/', controller.create);
 
-module.express = router;
+module.exports = router;
