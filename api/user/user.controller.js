@@ -137,7 +137,7 @@ exports.authenticate = function (req, res) {
                 let token = jwt.sign(payload, config.SECRET_KEY, {
                   expiresIn: 1440
                 });
-                payload.lecture = lecture;
+                // payload.lecture = lecture;
                 payload.lecture_id = lecture._id;
                 return res.send({
                   token: token,
@@ -161,14 +161,14 @@ exports.authenticate = function (req, res) {
                   expiresIn: 1440
                 });
                 if (user.hasLogin) {
-                  payload.student = student;
+                  // payload.student = student;
                   return res.send({
                     token: token,
                     user: payload
                   });
                 } else if (!user.hasLogin && student.npm === user.nomor_induk) {
                   student.user_id = user._id;
-                  payload.student = student;
+                  // payload.student = student;
                   student.save(function (err) {
                     if (err) return res.status(500).send(err);
 
