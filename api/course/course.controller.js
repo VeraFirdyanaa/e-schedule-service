@@ -10,12 +10,13 @@ exports.index = function (req, res) {
 
   Q.all([
     Course.count(query).exec(),
-    Course.find(query).skip(skip).limit(limit).exec()
+    Course.find(query).populate('lectures').skip(skip).limit(limit).exec()
   ])
     .spread(function (total, courses) {
       return res.status(200).json({ total, courses });
     })
     .catch(function (err) {
+      console.log('err', err);
       if (err) return res.status(500).send(err);
     });
 };
@@ -32,7 +33,7 @@ exports.search = function (req, res) {
 };
 
 exports.show = function (req, res) {
-  Course.findOne({ _id: req.params.id }).populate('classes').exec(function (err, course) {
+  Course.findOne({ _id: req.params.id }).populate('lectures').exec(function (err, course) {
     if (err) return res.status(500).send(err);
 
     if (!course) return res.status(404).json({ message: 'Course Not Found!' });
@@ -55,6 +56,7 @@ exports.update = function (req, res) {
     if (!course) return res.status(404).json({ message: 'Course not Found!' });
 
     let updated = _.merge(course, req.body);
+    updated.markModified('lectures');
     updated.save(function (err) {
       console.log('err', err);
       if (err) return res.status(500).send(err);

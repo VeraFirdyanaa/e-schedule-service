@@ -7,8 +7,9 @@ const CourseSchema = new Schema({
   sks: { type: Number, default: 1 },
   semester: { type: String, enum: ["ganjil", "genap"], required: true },
   angkaKelas: { type: Number, required: true },
+  jenisPembelajaran: { type: String, enum: ["teori", "praktikum"] },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
-  // lectures: [{ type: Schema.Types.ObjectId }]
+  lectures: [{ type: Schema.Types.ObjectId, ref: 'Lecture' }]
 });
 
 module.exports = mongoose.model('Course', CourseSchema);

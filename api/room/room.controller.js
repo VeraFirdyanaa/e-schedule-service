@@ -42,7 +42,6 @@ exports.show = function (req, res) {
 
 exports.create = function (req, res) {
   let body = req.body;
-  body.name = body.name + body.building;
   Room.create(body, function (err, room) {
     if (err) return res.status(500).send(err);
 

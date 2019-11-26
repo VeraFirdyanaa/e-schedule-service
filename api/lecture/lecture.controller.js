@@ -24,7 +24,8 @@ exports.index = function (req, res) {
 
 exports.search = function (req, res) {
   let limit = Number(req.query.limit) || 25;
-  let query = { name: { $regex: req.query.name, $options: 'i' } };
+
+  let query = { $or: [{ name: { $regex: req.query.search, $options: 'i' } }, { nid: { $regex: req.query.search, $options: 'i' } }] };
 
   Lecture.find(query).limit(limit).exec(function (err, lectures) {
     if (err) return res.status(500).send(err);
