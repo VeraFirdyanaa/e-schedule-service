@@ -22,10 +22,12 @@ exports.index = function (req, res) {
 };
 
 exports.getLectureCourses = function (req, res) {
+  console.log('user', req.user ? req.user : 'Noe user');
   var query = {
     lectures: { $contains: req.user._id }
   };
   Course.find(query).exec(function (err, courses) {
+    console.log('the error you got', err);
     if (err) return res.status(500).send(err);
 
     res.status(200).json(courses);
