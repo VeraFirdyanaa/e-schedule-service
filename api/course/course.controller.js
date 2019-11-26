@@ -21,6 +21,17 @@ exports.index = function (req, res) {
     });
 };
 
+exports.getLectureCourses = function (req, res) {
+  var query = {
+    lectures: { $contains: req.user._id }
+  };
+  Course.find(query).exec(function (err, courses) {
+    if (err) return res.status(500).send(err);
+
+    res.status(200).json(courses);
+  });
+};
+
 exports.search = function (req, res) {
   let limit = Number(req.query.limit) || 25;
   let query = { name: { $regex: req.query.name, $options: 'i' } };

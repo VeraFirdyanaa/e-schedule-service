@@ -2,6 +2,7 @@ var BroadCast = require('./tpBroadcast.model');
 var StudyYear = require('../studyYear/studyYear.model');
 var axios = require('axios');
 var Config = require('../../config');
+var PusherService = require('../../services/pusher.service');
 
 exports.index = function (req, res) {
   BroadCast.find().sort('-start').populate('studyYear').limit(5).exec(function (err, broadcasts) {
@@ -54,6 +55,9 @@ exports.checkExpired = function (req, res) {
         };
         StudyYear.update({ _id: broadcast.studyYear }, { $set: { stage: 'ready', endTeachingPlan: new Date() } }).exec(function (err, result) {
           if (err) return res.status(500).send(err);
+
+          let ps = new PusherService();
+          ps.trigger('automation', 'status', { message: 'Some Study Year Was Updated' });
 
           return res.status(200).json({ message: 'Study Year Was Updated to Expired', broadcast: broadcast });
         });
