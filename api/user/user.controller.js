@@ -113,21 +113,32 @@ exports.authenticate = function (req, res) {
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
           // if (req.body.password === user.password) {
-          const payload = {
-            _id: user._id,
-            email: user.email,
-            role: user.role
-          }
-          let token = jwt.sign(payload, config.SECRET_KEY, {
-            expiresIn: 1440
-          });
+          // const payload = {
+          //   _id: user._id,
+          //   email: user.email,
+          //   role: user.role
+          // }
+          // let token = jwt.sign(payload, config.SECRET_KEY, {
+          //   expiresIn: 1440
+          // });
           switch (user.role) {
             case 'Lecture':
               Lecture.findOne({ user: user._id }).exec(function (err, lecture) {
                 if (err) return res.status(500).send(err);
                 if (!lecture) return res.status(404).json({ message: 'Lecture Not Found!' });
 
+                const payload = {
+                  _id: user._id,
+                  email: user.email,
+                  role: user.role,
+                  lecture: lecture,
+                  lecture_id: lecture._id
+                }
+                let token = jwt.sign(payload, config.SECRET_KEY, {
+                  expiresIn: 1440
+                });
                 payload.lecture = lecture;
+                payload.lecture_id = lecture._id;
                 return res.send({
                   token: token,
                   user: payload
@@ -139,7 +150,16 @@ exports.authenticate = function (req, res) {
                 if (err) return res.status(500).send(err);
 
                 if (!student) return res.status(404).json({ message: 'Student Not Found!' });
-
+                const payload = {
+                  _id: user._id,
+                  email: user.email,
+                  role: user.role,
+                  student: student,
+                  student_id: student._id
+                }
+                let token = jwt.sign(payload, config.SECRET_KEY, {
+                  expiresIn: 1440
+                });
                 if (user.hasLogin) {
                   payload.student = student;
                   return res.send({

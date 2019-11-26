@@ -24,7 +24,7 @@ exports.index = function (req, res) {
 exports.getLectureCourses = function (req, res) {
   console.log('user', req.user ? req.user : 'Noe user');
   var query = {
-    lectures: { $contains: req.user._id }
+    lectures: { $in: req.user.lecture_id }
   };
   Course.find(query).exec(function (err, courses) {
     console.log('the error you got', err);
