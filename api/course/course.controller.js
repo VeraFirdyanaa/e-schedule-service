@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const Course = require('./course.model');
+const mongodb = require('mongodb');
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -22,12 +23,13 @@ exports.index = function (req, res) {
 };
 
 exports.getLectureCourses = function (req, res) {
-  console.log('user', req.user ? req.user : 'Noe user');
   var query = {
-    lectures: { $in: req.user.lecture_id }
+    lectures: { $in: [req.user.lecture_id] }
   };
+
+  console.log('query you set', query);
+
   Course.find(query).exec(function (err, courses) {
-    console.log('the error you got', err);
     if (err) return res.status(500).send(err);
 
     res.status(200).json(courses);
