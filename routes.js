@@ -14,8 +14,8 @@ module.exports = function (app) {
   app.use('/api/rooms', require('./api/room'));
   app.use('/api/broadcasts', require('./api/tpBroadcast'));
 
-  app.route('*')
-    .get(function (req, res) {
-      res.sendFile('build/index.html');
-    });
+  // app.route('*')
+  //   .get(function (req, res) {
+  //     res.sendFile('build/index.html');
+  //   });
 }

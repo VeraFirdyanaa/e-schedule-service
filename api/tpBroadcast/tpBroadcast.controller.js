@@ -44,7 +44,10 @@ exports.checkExpired = function (req, res) {
 
     if (!broadcast) return res.status(200).json({ message: 'No Broadcast Started!' });
     let brDate = new Date(broadcast.start);
-    if (isSameDate(brDate, now)) {
+    brDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    console.log('broadcast', broadcast, isSameDate(brDate, now), brDate, now);
+    if (now >= brDate) {
       broadcast.status = 'expired';
       broadcast.save(function (err) {
         if (err) return res.status(500).send(err);

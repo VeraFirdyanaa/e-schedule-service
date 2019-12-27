@@ -185,6 +185,14 @@ exports.authenticate = function (req, res) {
               });
               break;
             default:
+              const payload = {
+                _id: user._id,
+                email: user.email,
+                role: user.role
+              }
+              let token = jwt.sign(payload, config.SECRET_KEY, {
+                expiresIn: 1440
+              });
               res.send({
                 token: token,
                 user: payload
