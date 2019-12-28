@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const Course = require('./course.model');
-const mongodb = require('mongodb');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 exports.index = function (req, res) {
   let page = Number(req.query.page) || 1;
@@ -24,15 +24,16 @@ exports.index = function (req, res) {
 
 exports.getLectureCourses = function (req, res) {
   var query = {
-    lectures: { $in: [req.user.lecture_id] }
+    // "lectures": { $in: ["5dc697c838d7c1140a4d86db"] },
+    semester: "ganjil"
   };
 
   console.log('query you set', query);
-
   Course.find(query).exec(function (err, courses) {
     if (err) return res.status(500).send(err);
 
-    res.status(200).json(courses);
+    let myCourses = courses.filter(course => course.lectures.indexOf(req.user.lecture_id) > -1);
+    res.status(200).json(myCourses);
   });
 };
 

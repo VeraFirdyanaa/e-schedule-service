@@ -109,7 +109,8 @@ exports.authenticate = function (req, res) {
   User.findOne({
     email: req.body.email
   })
-    .then(user => {
+    .exec((err, user) => {
+      if (err) return res.send('error: ' + err)
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
           // if (req.body.password === user.password) {
@@ -135,7 +136,7 @@ exports.authenticate = function (req, res) {
                   lecture_id: lecture._id
                 }
                 let token = jwt.sign(payload, config.SECRET_KEY, {
-                  expiresIn: 1440
+                  expiresIn: 14400
                 });
                 // payload.lecture = lecture;
                 payload.lecture_id = lecture._id;
@@ -158,7 +159,7 @@ exports.authenticate = function (req, res) {
                   student_id: student._id
                 }
                 let token = jwt.sign(payload, config.SECRET_KEY, {
-                  expiresIn: 1440
+                  expiresIn: 14400
                 });
                 if (user.hasLogin) {
                   // payload.student = student;
@@ -191,7 +192,7 @@ exports.authenticate = function (req, res) {
                 role: user.role
               }
               let token = jwt.sign(payload, config.SECRET_KEY, {
-                expiresIn: 1440
+                expiresIn: 14400
               });
               res.send({
                 token: token,
@@ -208,8 +209,5 @@ exports.authenticate = function (req, res) {
           error: 'User does not exist'
         })
       }
-    })
-    .catch(err => {
-      res.send('error: ' + err)
     })
 }
