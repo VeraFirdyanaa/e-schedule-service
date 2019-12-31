@@ -42,6 +42,7 @@ exports.show = function (req, res) {
 
 exports.create = function (req, res) {
   let body = req.body;
+  body.lecture = req.user.lecture_id;
   TeachingPlan.create(body, function (err, teachingPlan) {
     if (err) return res.status(500).send(err);
 
