@@ -40,6 +40,14 @@ exports.show = function (req, res) {
   });
 };
 
+exports.getKelasBySemester = function (req, res) {
+  Kelas.find({ angkaKelas: req.params.semester }).exec(function (err, kelas) {
+    if (err) return res.status(500).send(err);
+
+    res.status(200).json(kelas);
+  })
+}
+
 exports.create = function (req, res) {
   let body = req.body;
   Kelas.create(body, function (err, kelas) {
