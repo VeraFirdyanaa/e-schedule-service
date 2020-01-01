@@ -41,7 +41,7 @@ exports.show = function (req, res) {
 };
 
 exports.getKelasBySemester = function (req, res) {
-  Kelas.find({ angkaKelas: req.params.semester }).exec(function (err, kelas) {
+  Kelas.find({ angkaKelas: req.params.semester, classType: req.query.tipe || 'reguler' }).exec(function (err, kelas) {
     if (err) return res.status(500).send(err);
 
     res.status(200).json(kelas);
