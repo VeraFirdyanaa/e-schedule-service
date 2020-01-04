@@ -13,6 +13,7 @@ module.exports = function (app) {
   app.use('/api/schedules', require('./api/schedule'));
   app.use('/api/rooms', require('./api/room'));
   app.use('/api/broadcasts', require('./api/tpBroadcast'));
+  app.use('/api/dashboard', require('./api/dashboard'));
 
   // app.route('*')
   //   .get(function (req, res) {
